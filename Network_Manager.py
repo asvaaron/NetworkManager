@@ -2,37 +2,45 @@
 # -*- coding: utf-8 -*-
 
 import NetworkManager
-
+import os
+import subprocess
+import re
+from WritetoXML import WriteXMLNetwork
 
 class Network_Manager:
 
-    def __init__(self):
-        self.__devicetype=NetworkManager.const('device_type', 2)
+    def __init__(self,SSID,Strenght):
+
+        self._device=''
+        self._SSID=SSID
+        self._Strenght=Strenght
+        self._upspeed=''
+        self._dospeed=''
+
+
+    def initialize(self):
+        self.__device=NetworkManager.const('device_type', 2)
         self._status=NetworkManager.const('state', 40)
+        self._dospeed, self._upspeed = self.speed_test()
 
+    def speed_test(self):
+        p = subprocess.Popen("speedtest", stdout=subprocess.PIPE, shell=True)
+        (output, err) = p.communicate()
+        p_status = p.wait()
+        print "Command output : ", output
+        print "Command exit status/return code : ", p_status
+        a=(re.findall('\d+.\d+', output))
+        return (a[4],a[5])
 
+    def __str__(self):
+        str='Network: '
+        str += '  SSID: '+ self._SSID
+        str += '  Strenght: '+ self._Strenght
+        str +='  Upload Speed: '+ self._upspeed
+        str +='  Download Speed: '+ self._dospeed
+        str+='  Device:  '+ self._device
+        return str;
 
-    def imprimir(self):
-        #for dev in NetworkManager.NetworkManager.GetDevices():
-        #    if dev.DeviceType != NetworkManager.NM_DEVICE_TYPE_WIFI:
-        #    #NetworkManager.NM_DEVICE_TYPE_ETHERNET
-        #        continue
-        #    for ap in dev.SpecificDevice().GetAccessPoints():
-        #        print '%-15s %dMHz %d%%' % (ap.Ssid, ap.Frequency, ap.Strength)
-
-        #print("Available connections")
-        #print("%-30s %s" % ("Name", "Type"))
-        #for conn in NetworkManager.Settings.ListConnections():
-        #    settings = conn.GetSettings()['connection']
-        #    print("%-30s %s" % (settings['id'], settings['type']))
-
-        print("")
-
-        print("Active connections")
-        print("%-30s %-20s %-10s %s" % ("Name", "Type", "Default", "Devices"))
-        for conn in NetworkManager.NetworkManager.ActiveConnections:
-            settings = conn.Connection.GetSettings()['connection']
-            print("%-30s %-20s %-10s %s" % (
-            settings['id'], settings['type'], conn.Default, ", ".join([x.Interface for x in conn.Devices])))
-
-
+    def writeXml(self):
+        W=WriteXMLNetwork();
+        W.write(self._SSID,self._Strenght,self._dospeed,self._dospeed)

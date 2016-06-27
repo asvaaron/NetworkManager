@@ -9,12 +9,16 @@ class WriteXMLNetwork:
     def __init__(self):
         self._root = Element('Root')
 
-    def write(self, SSID, Strenght):
+    def write(self, SSID, Strenght,DownloadSpeed,UploadSpeed):
         network = SubElement(self._root, 'Network')
         SSID1 = SubElement(network, 'SSID')
         SSID1.text = SSID
         Strenght1 = SubElement(network, 'Strenght')
         Strenght1.text = Strenght
+        DownloadSpeed1 = SubElement(network, 'DownloadSpeed')
+        DownloadSpeed1.text = DownloadSpeed
+        UploadSpeed1 = SubElement(network, 'UploadSpeed')
+        UploadSpeed1.text = UploadSpeed
         output_file = open('Networks.xml', 'w+')
         output_file.write('<?xml version="1.0"?>')
         output_file.write(ElementTree.tostring(self._root))
@@ -23,7 +27,3 @@ class WriteXMLNetwork:
 
 if __name__ == '__main__':
     M = WriteXMLNetwork()
-    M.write("VR", "34%")
-    M.write("LAla", "24%")
-    M.write("L23la", "24%")
-    M.write("hgs", "2%")
