@@ -43,4 +43,3 @@ class Network_Manager:
 
     def writeXml(self):
         W=WriteXMLNetwork();
-        W.write(self._SSID,self._Strenght,self._dospeed,self._dospeed)
